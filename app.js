@@ -1,9 +1,6 @@
-if(process.env.NODE_ENV!="production"){
+if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
-}//production me nh hai to access ho rha hai
-
-// console.log(process.env.SECRET) // remove this after you've confirmed it is working
-
+}
 
 const express = require("express");
 const app = express();
@@ -19,22 +16,24 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
+
 const flash = require("connect-flash");
-//Authorization,Authentication
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
 // Database connection
-const MONGO_URL = "mongodb://127.0.0.1:27017/Airbnb";
-mongoose.connect(MONGO_URL, { useNewUrlParser: true })
+// const MONGO_URL = "mongodb://127.0.0.1:27017/Airbnb";
+const dbUrl = process.env.ATLASDB_URL;
+
+mongoose.connect( dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log("Connected to DB");
     })
     .catch(err => {
         console.error("DB connection error:", err);
     });
-
 
 // Middleware
 app.engine('ejs', ejsMate);
@@ -45,9 +44,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, "public")));
 
+const store = MongoStore.create({ 
+    mongoUrl:dbUrl,
+    crypto:{
+          secret:process.env.SECRET || 'defaultsecret'
+    },
+    touchAfter: 24 * 3600 // time period in seconds
+
+});
+
+store.on("error", ()=>{
+    console.log("ERROR IN MONGO SESSION STORE");
+});
+
 // Session options
 const sessionOptions = {
-    secret:process.env.SECRET,
+    store,
+    secret: process.env.SECRET || 'defaultsecret', // Ensure secret is set
     resave: false,
     saveUninitialized: true,
     cookie: { 
@@ -57,16 +70,16 @@ const sessionOptions = {
     },
 };
 
+
 // Use session and flash middleware
 app.use(session(sessionOptions));
-app.use(flash());//middleware for flash
+app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
 
 // Flash messages middleware
 app.use((req, res, next) => {
@@ -76,33 +89,19 @@ app.use((req, res, next) => {
     next();
 });
 
-
 // Routes
-app.get("/", (req, res) => {
-    res.send("Hi, I am the root route");
-});
-
-// app.get("/demouser",async(req,res)=>{
-//     let fakeUser=new User({
-//         email:"abcd@gmail.com",
-//         username:"Manprit Kaur "
-//     });
-//                   //user     //password
-//    let registeredUser=await  User.register(fakeUser,"helloworld");
-//    res.send(registeredUser);
-// })
+// app.get("/", (req, res) => {
+//     res.send("Hi, I am the root route");
+// });
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-
 // Handle all other routes
 app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page not found!"));
 });
-
-
 
 // Global error handler
 app.use((err, req, res, next) => {
@@ -114,4 +113,3 @@ app.use((err, req, res, next) => {
 app.listen(8080, () => {
     console.log("Server is running on port 8080");
 });
-

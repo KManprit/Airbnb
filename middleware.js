@@ -38,27 +38,35 @@ module.exports.isOwner = async(req,res,next)=>{
 
 
 module.exports.validateListing = (req, res, next) => {
+    console.log(req.body); // Log the request body
+    // Output:
+    // {
+    //   title: 'My Listing',
+    //   description: 'This is my listing',
+    //   location: 'New York',
+    //   country: 'USA',
+    //   image: {
+    //     filename: 'image.jpg',
+    //     url: 'https://example.com/image.jpg'
+    //   }
+    // }
     const { error } = listingSchema.validate(req.body);
     if (error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressError(msg, 400);
+      const errMsg = error.details.map(el => el.message).join(",");
+      res.status(400).send({ error: `Please provide a valid listing. ${errMsg}` });
     } else {
-        next();
+      next();
     }
-};
-
-
-module.exports.validateReview = (req, res, next) => {
+  };
+  module.exports.validateReview = (req, res, next) => {
     const { error } = reviewSchema.validate(req.body);
     if (error) {
-        const errMsg = error.details.map(el => el.message).join(",");
-        throw new ExpressError(400, errMsg);
+      const errMsg = error.details.map(el => el.message).join(",");
+      res.status(400).send({ error: `Please provide a valid review. ${errMsg}` });
     } else {
-        next();
+      next();
     }
-};
-
-
+  };
 module.exports.isReviewAuthor = async(req,res,next)=>{
     const {id, reviewId  } = req.params;
     let review = await Review.findById(reviewId );

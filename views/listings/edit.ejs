@@ -5,17 +5,17 @@
         <form action="/listings/<%= listing._id %>?_method=PUT" method="POST" novalidate class="needs-validation">
             <div class="mb-3">
                 <label for="title" class="form-label">Enter Title</label>
-                <input id="title" name="listing[title]" value="<%= listing.title %>" type="text" class="form-control" required>
+                <input id="title" name="listing[title]" value="<%= listing.title %>" type="text" class="form-control" required >
             </div>
             
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="image_filename" class="form-label">Enter Image Filename</label>
                 <input id="image_filename" name="listing[image][filename]" value="<%= listing.image.filename %>" placeholder="Enter image filename" class="form-control" required>
-            </div>
+            </div> -->
 
             <div class="mb-3">
                 <label for="image_url" class="form-label">Enter Image URL/Link</label>
-                <input id="image_url" name="listing[image][url]" value="<%= listing.image.url %>" placeholder="Enter image URL/Link" class="form-control" required>
+                <input id="image_url" name="listing[image][url]" value="<%= listing.image.url %>" placeholder="Enter image URL/Link" class="form-control" >
             </div>
 
             <div class="mb-3">

@@ -1,5 +1,8 @@
 const Listing = require('../models/listing');
 const { cloudinary } = require('../cloudConfig');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapToken = process.env.MAP_TOKEN;
+const geocodingClient = mbxGeocoding ({ accessToken: mapToken });
 
 // Controller for listing index route
 module.exports.index = async (req, res) => {
@@ -28,6 +31,7 @@ module.exports.showListing = async (req, res) => {
             req.flash('error', 'Listing you requested does not exist');
             return res.redirect('/listings');
         }
+        console.log('Found Listing:', foundListing);
         res.render('listings/show', { listing: foundListing });
     } catch (err) {
         req.flash('error', 'Something went wrong');
@@ -37,13 +41,27 @@ module.exports.showListing = async (req, res) => {
 
 // Controller for creating a new listing
 module.exports.createListing = async (req, res) => {
+    let response = await geocodingClient.forwardGeocode({
+        query: req.body.listing.location,
+        limit: 1,
+    })
+        .send();
+
+        // console.log(response.body.features[0].geometry);
+        res.send("done!");
+
+       
    let url = req.file.path;
    let filename = req.file.filename;
     
         const newListing = new Listing(req.body.listing);
         newListing.owner = req.user._id;
         newListing.image = { url, filename };
-        await newListing.save();
+
+        newListing.geometry = response.body.features[0].geometry;
+        console.log('New Listing Data:', newListing);
+        let savedLisitng= await newListing.save();
+        console.log(savedListing);
         req.flash('success', 'New Listing Created!');
         res.redirect('/listings');
     
@@ -59,6 +77,7 @@ module.exports.renderEditForm = async (req, res) => {
             req.flash('error', 'Listing you requested does not exist');
             return res.redirect('/listings');
         }
+        console.log('Fetched Listing for Edit:', listing);
         
         res.render('listings/edit.ejs', { listing });
     } catch (err) {
@@ -76,15 +95,19 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateListing = async (req, res) => {
     const { id } = req.params;
     try {
+        const price = Number(req.body.listing.price);
         const listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
         if (req.file) {
             const { path: url, filename } = req.file;
             listing.image = { url, filename };
             await listing.save();
         }
+        console.log('Updated Listing:', listing);
+        console.log('Title from request:', req.body.listing.title);
         req.flash('success', 'Listing Updated!');
         res.redirect(`/listings/${id}`);
     } catch (err) {
+        console.error('Error updating listing:', err);
         req.flash('error', 'Something went wrong');
         res.redirect(`/listings/${id}/edit`);
     }

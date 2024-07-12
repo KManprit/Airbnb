@@ -3,13 +3,13 @@ const Joi = require('joi');
 const listingSchema = Joi.object({
     title: Joi.string().required(),
     price: Joi.number().required().min(0),
-    description: Joi.string().required(),
+    description: Joi.string(),
     location: Joi.string().required(),
     country: Joi.string().required(),
     image: Joi.object({
-        filename: Joi.string().required(),
-        url: Joi.string().required()
-    }).required()
+        filename: Joi.string(),
+        url: Joi.string()
+    })
 });
 
 const reviewSchema = Joi.object({
