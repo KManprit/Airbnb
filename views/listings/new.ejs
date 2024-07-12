@@ -6,13 +6,17 @@
         <form action="/listings" method="POST" enctype="multipart/form-data" novalidate class="needs-validation">
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
-                <input id="title" name="listing[title]" type="text" class="form-control" required>
+                <input id="title" name="listing[title]"  type="text" class="form-control" required>
+
+            </div>
+            <div class="mb-3">
+                <label for="image_filename" class="form-label">Enter Image Filename</label>
+                <input id="image_filename" name="listing[image][filename]" placeholder="Enter image filename" class="form-control">
             </div>
 
             <div class="mb-3">
                 <label for="image" class="form-label">Image</label>
                 <input id="image" name="listing[image]" type="file" class="form-control" accept="image/*" required>
-            </div>
 
             <div class="mb-3">
                 <label for="price" class="form-label">Price</label>

@@ -31,7 +31,7 @@ module.exports.showListing = async (req, res) => {
             req.flash('error', 'Listing you requested does not exist');
             return res.redirect('/listings');
         }
-        console.log('Found Listing:', foundListing);
+        // console.log('Found Listing:', foundListing);
         res.render('listings/show', { listing: foundListing });
     } catch (err) {
         req.flash('error', 'Something went wrong');
@@ -47,8 +47,9 @@ module.exports.createListing = async (req, res) => {
     })
         .send();
 
+        req.flash('success', 'New Listing Created!');
         // console.log(response.body.features[0].geometry);
-        res.send("done!");
+        res.redirect('/listings');
 
        
    let url = req.file.path;
@@ -59,9 +60,9 @@ module.exports.createListing = async (req, res) => {
         newListing.image = { url, filename };
 
         newListing.geometry = response.body.features[0].geometry;
-        console.log('New Listing Data:', newListing);
+        // console.log('New Listing Data:', newListing);
         let savedLisitng= await newListing.save();
-        console.log(savedListing);
+        // console.log(savedListing);
         req.flash('success', 'New Listing Created!');
         res.redirect('/listings');
     
@@ -77,7 +78,7 @@ module.exports.renderEditForm = async (req, res) => {
             req.flash('error', 'Listing you requested does not exist');
             return res.redirect('/listings');
         }
-        console.log('Fetched Listing for Edit:', listing);
+        // console.log('Fetched Listing for Edit:', listing);
         
         res.render('listings/edit.ejs', { listing });
     } catch (err) {
@@ -102,8 +103,8 @@ module.exports.updateListing = async (req, res) => {
             listing.image = { url, filename };
             await listing.save();
         }
-        console.log('Updated Listing:', listing);
-        console.log('Title from request:', req.body.listing.title);
+        // console.log('Updated Listing:', listing);
+        // console.log('Title from request:', req.body.listing.title);
         req.flash('success', 'Listing Updated!');
         res.redirect(`/listings/${id}`);
     } catch (err) {
