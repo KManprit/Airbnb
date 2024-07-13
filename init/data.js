@@ -178,7 +178,7 @@ const sampleListings = [
     price: 1800,
     location: "Bali",
     country: "Indonesia",
-  },
+  },   
   {
     title: "Mountain View Cabin in Banff",
     description:

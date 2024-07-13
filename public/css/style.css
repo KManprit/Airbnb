@@ -4,6 +4,71 @@ background-color: bisque;
 
 
 /* Navbar */
+/* Basic styling */
+/* Base styles for mobile devices */
+body {
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding: 10px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Styles for tablets and larger screens */
+@media (min-width: 768px) {
+  .container {
+      padding: 20px;
+  }
+}
+
+/* Styles for desktops and larger screens */
+@media (min-width: 1024px) {
+  .container {
+      padding: 30px;
+  }
+}
+
+/* Example of a responsive navbar */
+.navbar {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.navbar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .navbar-nav {
+      flex-direction: row;
+  }
+}
+
+/* Example of responsive card layout */
+.card {
+  margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+  .card {
+      margin-bottom: 30px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+      margin-bottom: 40px;
+  }
+}
+
 .navbar{
     height: 5rem;
     background-color: white;
