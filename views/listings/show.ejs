@@ -23,14 +23,16 @@
     <p>Listing not found</p>
 <% } %>
 
-<% if (currUser && currUser._id.equals(listing.owner._id)) { %> 
-    <a href="/listings/<%= listing._id %>/edit" class="btn btn-primary mb-3">Edit this listing</a>
-
-    <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
-        <button class="btn btn-primary mb-3">Delete this listing</button>
-    </form>
-    <hr/>
+<% if (listing && listing.owner && currUser && currUser._id && listing.owner._id) { %>
+    <% if (currUser._id.equals(listing.owner._id)) { %>
+        <a href="/listings/<%= listing._id %>/edit" class="btn btn-primary mb-3">Edit this listing</a>
+        <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
+            <button class="btn btn-primary mb-3">Delete this listing</button>
+        </form>
+        <hr/>
+    <% } %>
 <% } %>
+
 
 <div class="col-8 offset-3 mb-3">
     <hr>
@@ -67,7 +69,11 @@
             <% for (let review of listing.reviews) { %>
                 <div class="card col-5 ms-3 mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">@<%= review.author.username || "Anonymous" %></h5>
+                        <% if (review.author) { %>
+                            <h5 class="card-title">@<%= review.author.username %></h5>
+                        <% } else { %>
+                            <h5 class="card-title">Anonymous</h5>
+                        <% } %>
                         <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
                         <p class="card-text"><%= review.body %></p>
                     </div>
