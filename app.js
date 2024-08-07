@@ -29,7 +29,7 @@ const User = require("./models/user.js");
 // const MONGO_URL = "mongodb://127.0.0.1:27017/Airbnb";
 const dbUrl = process.env.ATLASDB_URL;
 
-mongoose.connect( dbUrl, { useNewUrlParser: true, useUnifiedTopology: true, ssl: true })
+mongoose.connect( dbUrl, {  ssl: true })
     .then(() => {
         console.log("Connected to DB");
     })
